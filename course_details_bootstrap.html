@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ course.name }}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+    <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">Online Course Home</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                {% if user.is_authenticated %}
+                <li>
+                    <span class="text-muted mr-2">Logged in as: {{ user.username }}</span>
+                    <a class="btn btn-outline-danger btn-sm" href="{% url 'onlinecourse:logout' %}">Logout</a>
+                </li>
+                {% else %}
+                <li>
+                    <a class="btn btn-outline-primary btn-sm" href="{% url 'onlinecourse:login' %}">Login</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="jumbotron">
+            <h1 class="display-4">{{ course.name }}</h1>
+            <p class="lead">{{ course.description }}</p>
+            
+            <a href="{% url 'onlinecourse:exam' course.id %}" class="btn btn-primary btn-lg mt-3" role="button">Start Exam</a>
+        </div>
+
+        <h3 class="mb-3">Course Lessons</h3>
+        <div id="accordion">
+            {% for lesson in course.lesson_set.all %}
+            <div class="card mb-2">
+                <div class="card-header" id="heading{{ lesson.id }}">
+                    <h5 class="mb-0">
+                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{ lesson.id }}" aria-expanded="true" aria-controls="collapse{{ lesson.id }}">
+                           <strong>Lesson {{ lesson.order|add:"1" }}:</strong> {{ lesson.title }}
+                        </button>
+                    </h5>
+                </div>
+
+                <div id="collapse{{ lesson.id }}" class="collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ lesson.id }}" data-parent="#accordion">
+                    <div class="card-body">
+                        {{ lesson.content }}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="alert alert-info">No lessons available for this course yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
